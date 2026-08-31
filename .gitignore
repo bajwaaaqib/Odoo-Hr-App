@@ -1,0 +1,41 @@
+```
+# Dependencies
+.dart_tool/
+.packages
+.pub/
+
+# Build
+build/
+**/ios/.generated/
+**/android/.generated/
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Android
+**/android/**/gradle-wrapper.properties
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+
+# iOS
+**/ios/**/xcuserdata/
+**/ios/Pods/
+**/ios/Flutter/.last_build_id
+```
