@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  flutter_dev:
+    image: cirrusci/flutter:latest
+    container_name: geo_attendance_flutter
+    working_dir: /app
+    volumes:
+      - .:/app
+      - flutter_cache:/root/.pub-cache
+      - flutter_gradle:/root/.gradle
+    environment:
+      - ANDROID_HOME=/opt/android-sdk
+      - DISPLAY=${DISPLAY:-:0}
+      - TERM=xterm-256color
+    ports:
+      - "5555:5555"  # ADB port
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
+    # For Linux, you may need to add:
+    # devices:
+    #   - /dev/kvm
+    # For GPU acceleration:
+    # privileged: true
+
+  # Optional: Web testing environment
+  chrome_test:
+    image: cirrusci/flutter:latest
+    container_name: geo_attendance_chrome
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
+    environment:
+      - CHROME_BIN=/usr/bin/google-chrome
+    command: >
+      bash -c "cd /app && flutter pub get && flutter run -d chrome --web-port=8080"
+    depends_on:
+      - flutter_dev
+
+volumes:
+  flutter_cache:
+  flutter_gradle:
+
+# Notes:
+# 1. For iOS simulator testing, you need macOS host
+# 2. For Android emulator, ensure KVM is enabled on Linux
+# 3. Display forwarding may be required for GUI apps
+# 4. First build will take longer due to dependency downloads
