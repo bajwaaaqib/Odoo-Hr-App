@@ -43,8 +43,26 @@ fun AppNavigation(
     val timeOffRecords by viewModel.timeOffRecords.collectAsState()
     val deviceSessions by viewModel.deviceSessions.collectAsState()
     val biometricsEnabled by viewModel.biometricsEnabled.collectAsState()
+    val isOnBreak by viewModel.isOnBreak.collectAsState()
+    val breakStartTime by viewModel.breakStartTime.collectAsState()
+    val shiftNotes by viewModel.shiftNotes.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+
+    // Offline Sync, Charts & Simulation States
+    val connectionState by viewModel.connectionState.collectAsState()
+    val pendingPunches by viewModel.pendingPunches.collectAsState()
+    val isSyncing by viewModel.isSyncing.collectAsState()
+    val dailyChartItems by viewModel.dailyChartItems.collectAsState()
+    val chartSummary by viewModel.chartSummary.collectAsState()
+
+    // Dark Mode, Notifications & Pull-to-Refresh States
+    val darkModePreference by viewModel.darkModePreference.collectAsState()
+    val notificationsEnabled by viewModel.notificationsEnabled.collectAsState()
+    val geofenceAlertsEnabled by viewModel.geofenceAlertsEnabled.collectAsState()
+    val isRefreshingDashboard by viewModel.isRefreshingDashboard.collectAsState()
+    val isRefreshingHistory by viewModel.isRefreshingHistory.collectAsState()
+    val isRefreshingTimeOff by viewModel.isRefreshingTimeOff.collectAsState()
 
     NavHost(
         navController = navController,
@@ -80,11 +98,21 @@ fun AppNavigation(
                 serverUrl = serverConfig.url,
                 isLoading = isLoading,
                 errorMessage = errorMessage,
+                biometricsEnabled = biometricsEnabled,
                 onBack = {
-                    navController.popBackStack()
+                    navController.navigate(AppRoutes.SERVER_SETUP) {
+                        popUpTo(AppRoutes.LOGIN) { inclusive = true }
+                    }
                 },
-                onLogin = { email, password ->
-                    viewModel.login(email, password) {
+                onLogin = { email, password, stayLoggedIn ->
+                    viewModel.login(email, password, stayLoggedIn) {
+                        navController.navigate(AppRoutes.HOME) {
+                            popUpTo(AppRoutes.SERVER_SETUP) { inclusive = true }
+                        }
+                    }
+                },
+                onBiometricLogin = {
+                    viewModel.biometricLogin {
                         navController.navigate(AppRoutes.HOME) {
                             popUpTo(AppRoutes.SERVER_SETUP) { inclusive = true }
                         }
@@ -96,11 +124,30 @@ fun AppNavigation(
         composable(AppRoutes.HOME) {
             HomeScreen(
                 userProfile = userProfile,
+                serverUrl = serverConfig.url,
                 isCheckedIn = isCheckedIn,
+                isOnBreak = isOnBreak,
+                breakStartTime = breakStartTime,
+                shiftNotes = shiftNotes,
                 lastCheckInTime = lastCheckInTime,
                 geofenceZone = geofenceZone,
+                connectionState = connectionState,
+                pendingPunches = pendingPunches,
+                isSyncing = isSyncing,
+                dailyChartItems = dailyChartItems,
+                chartSummary = chartSummary,
+                isRefreshing = isRefreshingDashboard,
+                darkModePreference = darkModePreference,
                 onToggleAttendance = { viewModel.toggleAttendance() },
+                onToggleBreak = { viewModel.toggleBreak() },
+                onAddShiftNote = { note -> viewModel.addShiftNote(note) },
                 onRefreshLocation = { viewModel.refreshLocation() },
+                onPullRefresh = { viewModel.refreshDashboard() },
+                onToggleDarkMode = { viewModel.toggleDarkMode() },
+                onSendTestNotification = { type -> viewModel.sendTestNotification(type) },
+                onSelectOfficePreset = { preset -> viewModel.selectOfficePreset(preset) },
+                onSelectSimulation = { mockLoc -> viewModel.simulateLocation(mockLoc) },
+                onSyncPendingPunches = { viewModel.syncPendingPunches() },
                 onNavigateToProfile = { navController.navigate(AppRoutes.PROFILE) },
                 onNavigateToTimeOff = { navController.navigate(AppRoutes.TIME_OFF) },
                 onNavigateToHistory = { navController.navigate(AppRoutes.ATTENDANCE_HISTORY) }
@@ -131,6 +178,9 @@ fun AppNavigation(
                 serverUrl = serverConfig.url,
                 deviceSessions = deviceSessions,
                 biometricsEnabled = biometricsEnabled,
+                darkModePreference = darkModePreference,
+                notificationsEnabled = notificationsEnabled,
+                geofenceAlertsEnabled = geofenceAlertsEnabled,
                 onBack = { navController.popBackStack() },
                 onLogout = {
                     viewModel.logout {
@@ -139,8 +189,20 @@ fun AppNavigation(
                         }
                     }
                 },
+                onChangeServer = {
+                    viewModel.resetServer {
+                        navController.navigate(AppRoutes.SERVER_SETUP) {
+                            popUpTo(AppRoutes.HOME) { inclusive = true }
+                        }
+                    }
+                },
                 onRevokeDevice = { id -> viewModel.revokeDevice(id) },
-                onToggleBiometrics = { enabled -> viewModel.setBiometrics(enabled) }
+                onToggleBiometrics = { enabled -> viewModel.setBiometrics(enabled) },
+                onSelectDarkMode = { mode -> viewModel.setDarkModePreference(mode) },
+                onUpdateNotificationPreferences = { enabled, geofence ->
+                    viewModel.setNotificationPreferences(enabled, geofence)
+                },
+                onSendTestNotification = { type -> viewModel.sendTestNotification(type) }
             )
         }
     }

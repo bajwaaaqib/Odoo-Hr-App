@@ -12,20 +12,26 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -49,6 +55,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.odoohr.ui.theme.BackgroundLight
 import com.example.odoohr.ui.theme.BorderLight
 import com.example.odoohr.ui.theme.ErrorRed
 import com.example.odoohr.ui.theme.ErrorRedLight
@@ -65,15 +72,16 @@ fun ServerSetupScreen(
     errorMessage: String?,
     onValidateAndContinue: (String) -> Unit
 ) {
-    var urlText by remember { mutableStateOf(if (currentUrl.isNotEmpty()) currentUrl else "https://company.odoo.com") }
+    var urlText by remember { mutableStateOf(currentUrl) }
     val focusManager = LocalFocusManager.current
+    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Server Setup",
+                        text = "Odoo Server Setup",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.SemiBold,
                             color = Color.White
@@ -84,35 +92,37 @@ fun ServerSetupScreen(
                     containerColor = PrimaryBlue
                 )
             )
-        }
+        },
+        containerColor = BackgroundLight
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .verticalScroll(scrollState)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Box(
                 modifier = Modifier
-                    .size(96.dp)
-                    .background(PrimaryBlue.copy(alpha = 0.1f), RoundedCornerShape(28.dp)),
+                    .size(90.dp)
+                    .background(PrimaryBlue.copy(alpha = 0.1f), RoundedCornerShape(24.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Cloud,
-                    contentDescription = "Cloud Icon",
+                    contentDescription = "Cloud Setup",
                     tint = PrimaryBlue,
-                    modifier = Modifier.size(56.dp)
+                    modifier = Modifier.size(50.dp)
                 )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "Enter your Odoo server URL",
+                text = "Connect to Your Odoo Instance",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary
@@ -123,70 +133,109 @@ fun ServerSetupScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "This should be the HTTPS URL of your organization's Odoo instance",
+                text = "Enter your organization's Odoo domain link to connect your HR and attendance portal.",
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = TextSecondary
+                    color = TextSecondary,
+                    lineHeight = 20.sp
                 ),
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
-            OutlinedTextField(
-                value = urlText,
-                onValueChange = { urlText = it },
-                label = { Text("Odoo Server URL") },
-                placeholder = { Text("https://your-company.odoo.com") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Link,
-                        contentDescription = "Link Icon",
-                        tint = PrimaryBlue
-                    )
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Uri,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        focusManager.clearFocus()
-                        onValidateAndContinue(urlText)
-                    }
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("server_url_input"),
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryBlue,
-                    unfocusedBorderColor = BorderLight
-                )
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Quick preset demo servers
-            Row(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Text(
-                    text = "Presets:",
-                    style = MaterialTheme.typography.labelSmall.copy(color = TextMuted)
-                )
-                FilterChip(
-                    selected = urlText == "https://company.odoo.com",
-                    onClick = { urlText = "https://company.odoo.com" },
-                    label = { Text("Company HR") }
-                )
-                FilterChip(
-                    selected = urlText == "https://demo.odoo.com",
-                    onClick = { urlText = "https://demo.odoo.com" },
-                    label = { Text("Odoo Demo") }
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                ) {
+                    Text(
+                        text = "Odoo Server Domain",
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = TextPrimary
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    OutlinedTextField(
+                        value = urlText,
+                        onValueChange = { urlText = it },
+                        label = { Text("Server URL or Domain") },
+                        placeholder = { Text("e.g. ardperfumes.odoo.com") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Link,
+                                contentDescription = "Link Icon",
+                                tint = PrimaryBlue
+                            )
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Uri,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                                if (urlText.isNotBlank()) {
+                                    onValidateAndContinue(urlText)
+                                }
+                            }
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("server_url_input"),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryBlue,
+                            unfocusedBorderColor = BorderLight
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Example suggestions
+                    Text(
+                        text = "Examples:",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            color = TextMuted,
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        FilterChip(
+                            selected = urlText == "ardperfumes.odoo.com",
+                            onClick = { urlText = "ardperfumes.odoo.com" },
+                            label = { Text("ardperfumes.odoo.com", fontSize = 12.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = PrimaryBlue.copy(alpha = 0.15f),
+                                selectedLabelColor = PrimaryBlue
+                            )
+                        )
+                        FilterChip(
+                            selected = urlText == "demo.odoo.com",
+                            onClick = { urlText = "demo.odoo.com" },
+                            label = { Text("demo.odoo.com", fontSize = 12.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = PrimaryBlue.copy(alpha = 0.15f),
+                                selectedLabelColor = PrimaryBlue
+                            )
+                        )
+                    }
+                }
             }
 
             if (errorMessage != null) {
@@ -194,7 +243,7 @@ fun ServerSetupScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(ErrorRedLight, RoundedCornerShape(8.dp))
+                        .background(ErrorRedLight, RoundedCornerShape(10.dp))
                         .padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -204,7 +253,7 @@ fun ServerSetupScreen(
                         tint = ErrorRed,
                         modifier = Modifier.size(20.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = errorMessage,
                         style = MaterialTheme.typography.bodyMedium.copy(
@@ -215,7 +264,7 @@ fun ServerSetupScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = {
@@ -225,7 +274,7 @@ fun ServerSetupScreen(
                 enabled = !isLoading && urlText.isNotBlank(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
+                    .height(54.dp)
                     .testTag("server_setup_continue_button"),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -235,12 +284,12 @@ fun ServerSetupScreen(
                 if (isLoading) {
                     CircularProgressIndicator(
                         color = Color.White,
-                        strokeWidth = 2.dp,
+                        strokeWidth = 2.5.dp,
                         modifier = Modifier.size(24.dp)
                     )
                 } else {
                     Text(
-                        text = "Continue",
+                        text = "Continue to Login",
                         style = MaterialTheme.typography.labelLarge.copy(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -250,21 +299,22 @@ fun ServerSetupScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Lock,
+                    imageVector = Icons.Default.Security,
                     contentDescription = "Secured",
                     tint = TextMuted,
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(16.dp)
                 )
-                Spacer(modifier = Modifier.width(6.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Your connection will be secured with TLS encryption",
+                    text = "End-to-end encrypted connection to your Odoo backend",
                     style = MaterialTheme.typography.bodySmall.copy(
                         color = TextMuted,
                         fontSize = 12.sp
@@ -273,7 +323,7 @@ fun ServerSetupScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

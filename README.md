@@ -4,13 +4,13 @@ A modern, native Android mobile application built with **Kotlin** and **Jetpack 
 
 ## Features
 
-- **Server Setup**: Configure Odoo server URL with TLS/HTTPS validation and preset options.
-- **Authentication**: Token-based authentication, password visibility controls, and secure session management.
+- **Dynamic Server Setup**: Connect to any custom Odoo server link (e.g., `ardperfumes.odoo.com` or custom HTTPS instances) with automatic URL normalization and TLS verification.
+- **Secure & Dynamic Authentication**: No hardcoded credentials; users enter their own Odoo email/username and password. Includes a **"Stay logged in"** preference to keep the session active across app restarts.
 - **GPS Geofencing**: Real-time location validation within authorized office perimeters (e.g. Office Zone with precision & distance tracking).
 - **One-Tap Check-In / Check-Out**: Seamless attendance status toggling with instant timestamp and daily duration calculation.
 - **Attendance History**: Review chronological attendance logs with check-in, check-out, duration metrics, and on-time performance rates.
 - **Time Off Management**: Track leave balances (Annual, Sick, Emergency) and submit new leave requests with custom date ranges and reasons.
-- **Profile & Device Management**: View employee identity details, manage active registered device sessions, and configure biometric lock settings.
+- **Profile & Device Management**: View employee identity details, manage active registered device sessions, switch Odoo server instances, and configure biometric lock settings.
 
 ## Tech Stack & Architecture
 
