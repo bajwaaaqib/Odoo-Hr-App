@@ -1,0 +1,8 @@
+{
+  "name": "GeoFence Attendance",
+  "description": "Secure mobile attendance and HR application for Odoo with GPS geofencing capabilities.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,42 +1,41 @@
 ```
-# Flutter/Dart
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.build/
-bin/cache/
-bin/internal/
-lib/src/generated/
-
-# Android
-android/.gradle/
-android/build/
-android/app/build/
-android/local.properties
-
-# iOS
-ios/Pods/
-ios/build/
-ios/Flutter/.last_build_id
-
-# Docker
-.dockerenv
-!docker-compose.yml
-
 # Dependencies
-node_modules/
-vendor/
+.dart_tool/
+.packages
+.pub/
 
-# Logs
-*.log
-**/logs
+# Build
+build/
+**/ios/.generated/
+**/android/.generated/
 
 # Environment
 .env
 .env.local
-.env.*
+*.env.*
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
 
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Android
+**/android/**/gradle-wrapper.properties
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+
+# iOS
+**/ios/**/xcuserdata/
+**/ios/Pods/
+**/ios/Flutter/.last_build_id
 ```
